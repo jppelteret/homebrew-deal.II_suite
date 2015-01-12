@@ -36,6 +36,7 @@ class Trilinos < Formula
   depends_on :mpi => [:cc, :cxx, :recommended]
   depends_on :fortran => :recommended
   depends_on :x11 => :optional
+  depends_on "openblas" => :optional
 
   depends_on :python => :recommended
   depends_on "swig"  => :build if build.with? :python
@@ -62,6 +63,24 @@ class Trilinos < Formula
                -DTrilinos_WARNINGS_AS_ERRORS_FLAGS=""
                -DSacado_ENABLE_TESTS=OFF
                -DEpetraExt_ENABLE_TESTS=OFF]
+
+    # BLAS / LAPACK support
+    if build.with? "openblas"
+      args += %W[-DTPL_ENABLE_BLAS=ON
+                 -DBLAS_LIBRARY_NAMES=openblas
+                 -DBLAS_LIBRARY_DIRS="#{Formula['openblas'].opt_lib}"
+                 -DTPL_ENABLE_LAPACK=ON
+                 -DLAPACK_LIBRARY_NAMES=openblas
+                 -DLAPACK_LIBRARY_DIRS="#{Formula['openblas'].opt_lib}"]
+    else
+      if (OS.mac?) # Will find veclibfort in -L#{Formula['veclibfort'].opt_lib} -lveclibfort
+        args += %W[-DTPL_ENABLE_BLAS=ON
+                   -DTPL_ENABLE_LAPACK=ON]
+      else # Linux: Use system library
+        args += %W[-DTPL_ENABLE_BLAS=ON
+                   -DTPL_ENABLE_LAPACK=ON]
+      end
+    end
 
     args << "-DTrilinos_ASSERT_MISSING_PACKAGES=OFF" if build.head?
 

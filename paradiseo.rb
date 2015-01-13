@@ -29,6 +29,10 @@ class Paradiseo < Formula
   depends_on "gnuplot"      => :recommended
   depends_on "doxygen"      => :optional
 
+  # Add missing header guards protecting against OpenMP library inclusion in :
+  # eo/src/apply.h , eo/src/utils/eoParallel.cpp , eo/test/t-eoParallel.cpp , eo/test/t-openmp.cpp
+  patch :DATA if not build.head?
+
   def install
     if build.with? "peo" and not build.head?
       resource("peo_files").stage do
@@ -57,3 +61,78 @@ class Paradiseo < Formula
   end
 
 end
+
+__END__
+diff --git a/eo/src/apply.h b/eo/src/apply.h
+index f685f8d..99983e2 100644
+--- a/eo/src/apply.h
++++ b/eo/src/apply.h
+@@ -31,7 +31,10 @@
+ #include <utils/eoLogger.h>
+ #include <eoFunctor.h>
+ #include <vector>
++
++#ifdef _OPENMP
+ #include <omp.h>
++#endif // !_OPENMP
+ 
+ /**
+   Applies a unary function to a std::vector of things.
+diff --git a/eo/src/utils/eoParallel.cpp b/eo/src/utils/eoParallel.cpp
+index d9d09c3..78af14d 100644
+--- a/eo/src/utils/eoParallel.cpp
++++ b/eo/src/utils/eoParallel.cpp
+@@ -25,7 +25,9 @@ Caner Candan <caner.candan@thalesgroup.com>
+ 
+ */
+ 
++#ifdef _OPENMP
+ #include <omp.h>
++#endif // !_OPENMP
+ 
+ #include "eoParallel.h"
+ #include "eoLogger.h"
+diff --git a/eo/test/t-eoParallel.cpp b/eo/test/t-eoParallel.cpp
+index 72d4f26..d40548c 100644
+--- a/eo/test/t-eoParallel.cpp
++++ b/eo/test/t-eoParallel.cpp
+@@ -2,7 +2,9 @@
+ // t-eoParallel.cpp
+ //-----------------------------------------------------------------------------
+ 
++#ifdef _OPENMP
+ #include <omp.h>
++#endif // !_OPENMP
+ 
+ #include <eo>
+ #include <es/make_real.h>
+@@ -42,6 +44,7 @@ int main(int ac, char** av)
+ 
+     eo::log << eo::quiet << "DONE!" << std::endl;
+ 
++#ifdef _OPENMP
+ #pragma omp parallel
+     {
+  if ( 0 == omp_get_thread_num() )
+@@ -49,6 +52,7 @@ int main(int ac, char** av)
+    eo::log << "num of threads: " << omp_get_num_threads() << std::endl;
+      }
+     }
++#endif // !_OPENMP
+ 
+     return 0;
+ }
+diff --git a/eo/test/t-openmp.cpp b/eo/test/t-openmp.cpp
+index d2f4cf3..ab301fd 100644
+--- a/eo/test/t-openmp.cpp
++++ b/eo/test/t-openmp.cpp
+@@ -37,7 +37,9 @@ Caner Candan <caner.candan@thalesgroup.com>
+ 
+ #include <apply.h>
+ 
++#ifdef _OPENMP
+ #include <omp.h>
++#endif // !_OPENMP
+ 
+ #include <unistd.h>
+ 

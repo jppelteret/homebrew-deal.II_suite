@@ -58,6 +58,9 @@ class Paradiseo < Formula
       system "make test" if build.with? "tests"
       system "make install"
     end
+
+    # add symlinks against Paradiseo libraries
+    lib.install_symlink Dir["#{prefix}/lib64/*"]
   end
 
 end
@@ -75,7 +78,7 @@ index f685f8d..99983e2 100644
 +#ifdef _OPENMP
  #include <omp.h>
 +#endif // !_OPENMP
- 
+
  /**
    Applies a unary function to a std::vector of things.
 diff --git a/eo/src/utils/eoParallel.cpp b/eo/src/utils/eoParallel.cpp
@@ -83,13 +86,13 @@ index d9d09c3..78af14d 100644
 --- a/eo/src/utils/eoParallel.cpp
 +++ b/eo/src/utils/eoParallel.cpp
 @@ -25,7 +25,9 @@ Caner Candan <caner.candan@thalesgroup.com>
- 
+
  */
- 
+
 +#ifdef _OPENMP
  #include <omp.h>
 +#endif // !_OPENMP
- 
+
  #include "eoParallel.h"
  #include "eoLogger.h"
 diff --git a/eo/test/t-eoParallel.cpp b/eo/test/t-eoParallel.cpp
@@ -99,17 +102,17 @@ index 72d4f26..d40548c 100644
 @@ -2,7 +2,9 @@
  // t-eoParallel.cpp
  //-----------------------------------------------------------------------------
- 
+
 +#ifdef _OPENMP
  #include <omp.h>
 +#endif // !_OPENMP
- 
+
  #include <eo>
  #include <es/make_real.h>
 @@ -42,6 +44,7 @@ int main(int ac, char** av)
- 
+
      eo::log << eo::quiet << "DONE!" << std::endl;
- 
+
 +#ifdef _OPENMP
  #pragma omp parallel
      {
@@ -119,7 +122,7 @@ index 72d4f26..d40548c 100644
       }
      }
 +#endif // !_OPENMP
- 
+
      return 0;
  }
 diff --git a/eo/test/t-openmp.cpp b/eo/test/t-openmp.cpp
@@ -127,12 +130,11 @@ index d2f4cf3..ab301fd 100644
 --- a/eo/test/t-openmp.cpp
 +++ b/eo/test/t-openmp.cpp
 @@ -37,7 +37,9 @@ Caner Candan <caner.candan@thalesgroup.com>
- 
+
  #include <apply.h>
- 
+
 +#ifdef _OPENMP
  #include <omp.h>
 +#endif // !_OPENMP
- 
+
  #include <unistd.h>
- 

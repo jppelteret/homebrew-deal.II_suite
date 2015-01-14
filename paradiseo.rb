@@ -19,10 +19,6 @@ class Paradiseo < Formula
   depends_on "gnuplot"      => :recommended
   depends_on "doxygen"      => :optional
 
-  # Add missing header guards protecting against OpenMP library inclusion in :
-  # eo/src/apply.h , eo/src/utils/eoParallel.cpp , eo/test/t-eoParallel.cpp , eo/test/t-openmp.cpp
-  patch :DATA if not build.head?
-
   def install
     args  = ((build.include? "release") ? %W[-DCMAKE_INSTALL_PREFIX=#{prefix} -DCMAKE_BUILD_TYPE=Release] : std_cmake_args)
     args << "-DCMAKE_PREFIX_PATH=#{HOMEBREW_PREFIX}" # constrain Cmake to look for libraries in homebrew's prefix
@@ -48,5 +44,3 @@ class Paradiseo < Formula
   end
 
 end
-
-__END__

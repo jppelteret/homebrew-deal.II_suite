@@ -3,8 +3,8 @@ require 'formula'
 class Dealii < Formula
 
   homepage "http://www.dealii.org"
-  url "https://github.com/dealii/dealii/releases/download/v8.2.0/dealii-8.2.0.tar.gz"
-  sha1 '73bec299279e163f76ff5d437da28fd625df49dc'
+  url "https://github.com/dealii/dealii/releases/download/v8.2.1/dealii-8.2.1.tar.gz"
+  sha1 '18a83feb7b2d9bb7c7b3d7721176a90aa505b1eb'
 
   head do
     url "https://github.com/dealii/dealii.git", :branch => "master"
@@ -60,6 +60,7 @@ class Dealii < Formula
       system "make"
       # run minimal test cases (8 tests)
       system "make test"
+      ohai 'Quick test results are in ~/Library/Logs/Homebrew/dealii/03.make. Please check.'
       # run full test suite if really needed
       if build.with? "testsuite"
         system "make setup_tests"

@@ -9,15 +9,19 @@ class Paradiseo < Formula
 
   option "with-smp", "Build with symmetric multi-processing module (Requires C++11 compatible compiler)"
   option "with-mpi", "Build with parallel and distributed metaheuristics module (Requires MPI compiler)"
+  option "with-edo", "Build with (Experimental) EDO module"
   option "with-tests", "Enable build tests"
-  option "with-shared-libs", "Build shared libraries"
   option "release",       "Build with RELEASE flags"
 
   depends_on "cmake"        => :build
   depends_on :mpi           => [:cc, :cxx, :recommended] if build.with? "mpi"
-  #depends_on "libxml2"      => [:build] if build.with? "peo"
   depends_on "gnuplot"      => :recommended
   depends_on "doxygen"      => :optional
+
+  head do
+    # Ensure that eoserial library is built
+    patch :DATA if  build.with? "mpi"
+  end
 
   def install
     args  = ((build.include? "release") ? %W[-DCMAKE_INSTALL_PREFIX=#{prefix} -DCMAKE_BUILD_TYPE=Release] : std_cmake_args)
@@ -27,9 +31,9 @@ class Paradiseo < Formula
       args << "-DCMAKE_CXX_COMPILER=mpicxx"
     end
     args << "-DINSTALL_TYPE=min"
-    args << "-DBUILD_SHARED_LIBS:BOOL=" + ((build.with? "shared-libs") ? "ON" : "OFF")
     args << "-DSMP=" + ((build.with? "smp") ? "TRUE" : "FALSE")
     args << "-DMPI=" + ((build.with? "mpi") ? "TRUE" : "FALSE")
+    args << "-DEDO=" + ((build.with? "edo") ? "TRUE" : "FALSE")
     args << "-DENABLE_CMAKE_TESTING=" + ((build.with? "tests") ? "YES" : "NO")
 
     mkdir 'build' do
@@ -44,3 +48,18 @@ class Paradiseo < Formula
   end
 
 end
+
+__END__
+diff --git a/eo/src/CMakeLists.txt b/eo/src/CMakeLists.txt
+index b2b445a..d45ddc7 100644
+--- a/eo/src/CMakeLists.txt
++++ b/eo/src/CMakeLists.txt
+@@ -47,7 +47,7 @@ install(DIRECTORY do es ga gp other utils
+ add_subdirectory(es)
+ add_subdirectory(ga)
+ add_subdirectory(utils)
+-#add_subdirectory(serial)
++add_subdirectory(serial) # Required when including <paradiseo/eo/utils/eoTimer.h> , which is need by <paradiseo/eo/mpi/eoMpi.h>
+ 
+ if(ENABLE_PYEO)
+   add_subdirectory(pyeo)

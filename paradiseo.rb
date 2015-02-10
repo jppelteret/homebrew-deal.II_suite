@@ -3,7 +3,7 @@ require 'formula'
 class Paradiseo < Formula
   # Better option at this point than using the very old supplied packages
   head do
-    url "https://gforge.inria.fr/git/paradiseo/paradiseo.git", :branch => "master"
+    url "https://gforge.inria.fr/git/paradiseo/paradiseo.git", :using => :git, :branch => "master", :revision => "dbb8fbe9a786efd4d1c26408ac1883442e7643a6"
     version "2.1dev"
   end
 
@@ -63,3 +63,15 @@ index b2b445a..d45ddc7 100644
  
  if(ENABLE_PYEO)
    add_subdirectory(pyeo)
+diff --git a/moeo/test/t-moeo2DMinHypervolumeArchive.cpp b/moeo/test/t-moeo2DMinHypervolumeArchive.cpp
+index 994a9a4..c4ba77b 100644
+--- a/moeo/test/t-moeo2DMinHypervolumeArchive.cpp
++++ b/moeo/test/t-moeo2DMinHypervolumeArchive.cpp
+@@ -41,7 +41,7 @@
+ #include <moeo>
+ #include <cassert>
+ 
+-#include<archive/moeo2DMinHyperVolumeArchive.h>
++#include<archive/moeo2DMinHypervolumeArchive.h>
+ 
+ //-----------------------------------------------------------------------------

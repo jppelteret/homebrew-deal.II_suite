@@ -115,6 +115,8 @@ class Petsc < Formula
     prefix.install_symlink "#{prefix}/#{petsc_arch}/conf"
     lib.install_symlink Dir["#{prefix}/#{petsc_arch}/lib/*.a"],
                         Dir["#{prefix}/#{petsc_arch}/lib/*.dylib"]
+                        Dir["#{prefix}/#{petsc_arch}/lib/*.so"]
+                        Dir["#{prefix}/#{petsc_arch}/lib/*.so.*"]
     share.install_symlink Dir["#{prefix}/#{petsc_arch}/share/*"]
   end
 

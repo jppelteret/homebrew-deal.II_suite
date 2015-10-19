@@ -1,6 +1,6 @@
 require 'formula'
 
-class IAFEMesh < Formula
+class IaFemesh < Formula
 
   homepage "https://www.ccad.uiowa.edu/MIMX/projects/IA-FEMesh"
   head do

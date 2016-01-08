@@ -11,8 +11,8 @@ class Fadbadpp < Formula
   needs :cxx11
   def install
     # Main header library
-    system "mkdir -p #{prefix}/include"
-    system "mv *.h #{prefix}/include"
+    system "mkdir -p #{prefix}/include/fadbad++"
+    system "mv *.h #{prefix}/include/fadbad++"
 
     # Examples and documentation
     system "mkdir -p #{prefix}/share/fadbad++"
@@ -25,7 +25,7 @@ class Fadbadpp < Formula
       
       Dir.chdir("#{prefix}/share/tests/fadbad++")
       inreplace "Makefile" do |s|
-          s.gsub! "CFLAGS = -I..", "CFLAGS = -I#{prefix}/include" if s.include? "CFLAGS = -I.."
+          s.gsub! "CFLAGS = -I..", "CFLAGS = -I#{prefix}/include/fadbad++" if s.include? "CFLAGS = -I.."
         end
     end
     
